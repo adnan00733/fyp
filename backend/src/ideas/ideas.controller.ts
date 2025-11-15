@@ -18,6 +18,7 @@ import { diskStorage } from 'multer';
 import { v4 as uuid } from 'uuid';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { Request } from 'express';
+import { UpdateStatusDto } from './dto/update-status.dto';
 
 @Controller('ideas')
 export class IdeasController {
@@ -110,5 +111,16 @@ export class IdeasController {
     ) {
         const userId = req.user.sub;
         return this.ideasService.deleteIdeaFile(ideaId, filename, userId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put(':id/status')
+    async updateIdeaStatus(
+        @Param('id') id: string,
+        @Body() body: UpdateStatusDto,
+        @Req() req: any,
+    ) {
+        const userId = req.user.sub;
+        return this.ideasService.updateIdeaStatus(id, body.status, userId);
     }
 }

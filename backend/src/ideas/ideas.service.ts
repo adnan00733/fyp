@@ -16,6 +16,7 @@ export class IdeasService {
             ...data,
             attachments: files,
             userId,
+            status: 'public',
         });
     }
 
@@ -91,4 +92,16 @@ export class IdeasService {
 
         return idea.save();
     }
+    async updateIdeaStatus(ideaId: string, status: 'public' | 'validated' | 'revision', userId: string) {
+        const idea = await this.ideaModel.findById(ideaId);
+        if (!idea) throw new NotFoundException('Idea not found');
+
+        // Optional: Only owner or admin can update status
+        if (idea.userId.toString() !== userId)
+            throw new ForbiddenException('Not allowed to update status');
+
+        idea.status = status;
+        return idea.save();
+    }
+
 }
